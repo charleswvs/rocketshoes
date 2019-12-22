@@ -1,113 +1,67 @@
-import React from 'react';
+/* eslint-disable react/state-in-constructor */
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { MdAddShoppingCart } from 'react-icons/md';
+import { formatPrice } from '../../util/format';
+import api from '../../services/api';
 
 import { ProductList } from './styles';
 
-export default function Home() {
-  return (
-    <ProductList>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_detalhe2.jpg?ims=326x"
-          alt="Tênis"
-        />
+class Home extends Component {
+  state = {
+    products: [],
+  };
 
-        <strong>Tênis muito legal</strong>
-        <span>R$129,90</span>
+  async componentDidMount() {
+    const response = await api.get('products');
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
+    const data = response.data.map(product => ({
+      ...product,
+      priceFormatted: formatPrice(product.price), // the formatted price must be put in the font, or else it will consume resource
+    }));
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_detalhe2.jpg?ims=326x"
-          alt="Tênis"
-        />
+    this.setState({
+      products: data,
+    });
+  }
 
-        <strong>Tênis muito legal</strong>
-        <span>R$129,90</span>
+  handleAddProduct = product => {
+    // everytime a dispatch is used all reducers are triggered
+    const { dispatch } = this.props;
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
+    // triggers an action for redux
+    dispatch({
+      type: 'ADD_TO_CART',
+      product,
+    });
+  };
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_detalhe2.jpg?ims=326x"
-          alt="Tênis"
-        />
+  render() {
+    const { products } = this.state;
+    return (
+      <ProductList>
+        {products.map(product => (
+          <li key={product.id}>
+            <img src={product.image} alt={product.title} />
 
-        <strong>Tênis muito legal</strong>
-        <span>R$129,90</span>
+            <strong>{product.title}</strong>
+            <span>{product.priceFormatted}</span>
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
+            <button
+              type="button"
+              onClick={() => this.handleAddProduct(product)}
+            >
+              <div>
+                <MdAddShoppingCart size={16} color="#FFF" /> 3
+              </div>
 
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_detalhe2.jpg?ims=326x"
-          alt="Tênis"
-        />
-
-        <strong>Tênis muito legal</strong>
-        <span>R$129,90</span>
-
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
-
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_detalhe2.jpg?ims=326x"
-          alt="Tênis"
-        />
-
-        <strong>Tênis muito legal</strong>
-        <span>R$129,90</span>
-
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
-
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_detalhe2.jpg?ims=326x"
-          alt="Tênis"
-        />
-
-        <strong>Tênis muito legal</strong>
-        <span>R$129,90</span>
-
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" /> 3
-          </div>
-
-          <span>ADICIONAR AO CARRINHO</span>
-        </button>
-      </li>
-    </ProductList>
-  );
+              <span>ADICIONAR AO CARRINHO</span>
+            </button>
+          </li>
+        ))}
+      </ProductList>
+    );
+  }
 }
+
+export default connect()(Home);
