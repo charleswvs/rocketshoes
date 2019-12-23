@@ -1,20 +1,12 @@
 import produce from 'immer';
 
 export default function cart(state = [], action) {
-  // switch is created so the state will only change if the action is "@cart/ADD"
+  // switch is created so the state will only change if the action is "@cart/ADD_REQUEST"
   switch (action.type) {
-    case '@cart/ADD':
+    case '@cart/ADD_SUCCESS':
       return produce(state, draft => {
-        const productIndex = draft.findIndex(p => p.id === action.product.id);
-
-        if (productIndex >= 0) {
-          draft[productIndex].amount += 1;
-        } else {
-          draft.push({
-            ...action.product,
-            amount: 1,
-          });
-        }
+        const { product } = action;
+        draft.push(product);
       });
 
     case '@cart/REMOVE':
@@ -24,7 +16,6 @@ export default function cart(state = [], action) {
         if (productIndex >= 0) {
           draft.splice(productIndex, 1);
         }
-        draft.push();
       });
 
     case '@cart/UPDATE_AMOUNT': {

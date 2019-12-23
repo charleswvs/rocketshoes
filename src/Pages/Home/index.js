@@ -28,11 +28,11 @@ class Home extends Component {
     });
   }
 
-  handleAddProduct = product => {
+  handleAddProduct = id => {
     // everytime a dispatch is used all reducers are triggered
-    const { addToCart } = this.props;
+    const { addToCartRequest } = this.props;
 
-    addToCart(product);
+    addToCartRequest(id);
   };
 
   render() {
@@ -50,7 +50,7 @@ class Home extends Component {
 
             <button
               type="button"
-              onClick={() => this.handleAddProduct(product)}
+              onClick={() => this.handleAddProduct(product.id)}
             >
               <div>
                 <MdAddShoppingCart size={16} color="#FFF" />{' '}
